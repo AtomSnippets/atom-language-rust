@@ -5,6 +5,23 @@
   'allow!':
     'prefix': 'allow!'
     'body': '#![allow(${1:lint})]'
+  "assert!(…)":
+    prefix: "assert"
+    body: "assert!(${1});"
+  "assert_eq!(…, …)":
+    prefix: "assert_eq"
+    body: "assert_eq!(${1}, ${2});"
+  undefined:
+   prefix: "bench"
+   body: '''
+    #[bench]
+    fn ${1:name}(b: &mut test::Bencher) {
+      ${2:b.iter(|| ${3:/* benchmark code */})}
+    }
+  '''
+  "const …: … = …;":
+   prefix: "const"
+   body: "const ${1:CONST}: ${2:Type} = ${4:init};"
   'deny':
     'prefix': 'deny'
     'body': '#[deny(${1:lint})]'
@@ -14,6 +31,13 @@
   'derive':
     'prefix': 'derive'
     'body': '#[derive(${1:Trait})]'
+  "else { … }":
+    prefix: "else"
+    body: '''
+     else {
+       ${1:unimplemented!();}
+     }
+   '''
   'enum':
     'prefix': 'enum'
     'body': '''
@@ -21,6 +45,29 @@
       \t$2
       }
     '''
+  "Err(…)":
+    prefix: "Err"
+    body: "Err(${1})"
+  "extern crate …;":
+   prefix: "extern-crate"
+   body: "extern crate ${1:name};"
+  "extern \"C\" fn …(…) { … }":
+    prefix: "extern-fn"
+    body: '''
+     extern "C" fn ${1:name}(${2:arg}: ${3:Type}) -> ${4:RetType} {
+       ${5:// add code here}
+     }
+   '''
+  "extern \"C\" { … }":
+    prefix: "extern-mod"
+    body: '''
+     extern "C" {
+       ${2:// add code here}
+     }
+   '''
+  "fmt!(…)":
+    prefix: "fmt"
+    body: "fmt!(\"${1:\\{${2::?}\\}}\"${1/([^\\{])*(\\{.*\\})?.*/(?2:, :\\);)/}$3${1/([^\\{])*(\\{.*\\})?.*/(?2:\\))/}"
   'fn':
     'prefix': 'fn'
     'body': '''
@@ -42,6 +89,13 @@
       \t$3
       }
     '''
+  "if let … = … { … }":
+    prefix: "if-let"
+    body: '''
+     if let ${1:Some(pat)} = ${2:expr} {
+       ${2:unimplemented!();}
+     }
+   '''
   'if':
     'prefix': 'if'
     'body': '''
@@ -49,6 +103,13 @@
       \t$2
       }
     '''
+  "impl … for … { … }":
+    prefix: "impl-trait"
+    body: '''
+     impl ${1:Trait} for ${2:Type} {
+       ${3:// add code here}
+     }
+   '''
   'impl':
     'prefix': 'impl'
     'body': '''
@@ -66,6 +127,13 @@
       \t$1
       }
     '''
+  "macro_rules! … { … }":
+    prefix: "macro_rules"
+    body: '''
+     macro_rules! ${1:name} {
+       (${2}) => (${3})
+     }
+   '''
   'macro':
     'prefix': 'macro'
     'body': '''
@@ -87,15 +155,37 @@
       \t$2
       }
     '''
+  "mod … { … }":
+    prefix: "mod"
+    body: '''
+     mod ${1:name} {
+       ${2:// add code here}
+     } 
+   '''
+  "Ok(…)":
+    prefix: "Ok"
+    body: "Ok(${1:result})"
+  "panic!(…)":
+    prefix: "panic"
+    body: "panic!(\"${1:\\{${2::?}\\}}\"${1/([^\\{])*(\\{.*\\})?.*/(?2:, :\\);)/}$3${1/([^\\{])*(\\{.*\\})?.*/(?2:\\);)/}"
   'print':
     'prefix': 'print'
     'body': 'print!("${1:{${2::?}\\}}", ${3});'
   'println':
     'prefix': 'println'
     'body': 'println!("${1:{${2::?}\\}}", ${3});'
+  "Some(…)":
+    prefix: "Some"
+    body: "Some(${1})"
   'static':
     'prefix': 'static'
     'body': 'static ${1:CONSTANT}: ${2:TypeName} = ${3:value};'
+  "struct …(…);":
+    prefix: "struct-tuple"
+    body: "struct ${1:Name}(${2:Type});"
+  "struct …;":
+    prefix: "struct-unit"
+    body: "struct ${1:Name};"
   'struct':
     'prefix': 'struct'
     'body': '''
@@ -140,6 +230,13 @@
   'warn!':
     'prefix': 'warn!'
     'body': '#![warn(${1:lint})]'
+  "while let … = … { … }":
+    prefix: "while-let"
+    body: '''
+     while let ${1:Some(pat)} = ${2:expr} {
+       ${2:unimplemented!();}
+     }
+   '''
   'while':
     'prefix': 'while'
     'body': '''
